@@ -1,29 +1,72 @@
 // ==UserScript==
 // @name        fixbib
-// @namespace   fixbib
+// @namespace   https://github.com/alick9188
 // @description Fix common bib errors.
 // @include     http://scholar.google.com/scholar.bib*
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
 // @include     http://dl.acm.org/citation.cfm*
-// @version     0.3
+// @include     http://dl.acm.org/exportformats.cfm*
+// @version     0.5
 // @grant       none
 // ==/UserScript==
 
 (function () {
+  // Title case function via https://raw.github.com/gouch/to-title-case/master/to-title-case.js
+  /*
+   * To Title Case 2.0.1 – http://individed.com/code/to-title-case/
+   * Copyright © 2008–2012 David Gouch. Licensed under the MIT License.
+   */
+
+  String.prototype.toTitleCase = function () {
+    var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via)$/i;
+
+    return this.replace(/([^\W_]+[^\s-]*) */g, function (match, p1, index, title) {
+      if (index > 0 && index + p1.length !== title.length &&
+        p1.search(smallWords) > -1 && title.charAt(index - 2) !== ":" &&
+        title.charAt(index - 1).search(/[^\s-]/) < 0) {
+          return match.toLowerCase();
+        }
+
+      if (p1.substr(1).search(/[A-Z]|\../) > -1) {
+        return match;
+      }
+
+      return match.charAt(0).toUpperCase() + match.substr(1);
+    });
+  };
+  // Title case function ended.
+
   var sites = {
+    UNKNOWN         : -1,
     GOOGLE_SCHOLAR  : 0,
-    ACM_DL          : 1,
-    IEEE_XPLORE     : 2,
-    UNKNOWN         : -1
+    IEEE_XPLORE     : 1,
+    ACM_DL          : 2,
+    ACM_DL_WEB      : 3
   };
 
   var site = sites.UNKNOWN;
   if (location.hostname === 'scholar.google.com') {
     site = sites.GOOGLE_SCHOLAR;
   } else if (location.hostname === 'dl.acm.org') {
-    site = sites.ACM_DL;
+    if (location.pathname === '/citation.cfm') {
+      site = sites.ACM_DL_WEB;
+    } else if (location.pathname === '/exportformats.cfm') {
+      site = sites.ACM_DL;
+    }
   } else if (location.hostname === 'ieeexplore.ieee.org') {
     site = sites.IEEE_XPLORE;
+  }
+
+  // For ACM DL webpage, modify the BibTeX link to open in a new tab.
+  if (site === sites.ACM_DL_WEB) {
+    var ret = /id=(\d+)/.exec(location.search);
+    if (ret !== null) {
+      var id = ret[1];
+      var newurl = 'http://dl.acm.org/exportformats.cfm?id=' + id + '&expformat=bibtex';
+      var s = Ext.select('#divtools > ul:nth-child(2) > li:nth-child(4) > span:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)');
+      s.elements[0].href = newurl;
+    }
+    return;
   }
 
   var orig, fixed;
@@ -44,27 +87,45 @@
     cb = ce = '';
   }
 
-  fixed = orig.replace(/journal={([^,]+), ([^}]*)},/, function (match, p1, p2, offset, string) {
+  fixed = orig.replace(/title\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
+    var p = p1.toTitleCase();
+    if (p === p1) {
+      return match;
+    } else {
+      return 'title={' + cb + p + ce + '},';
+    }
+  }).replace(/journal\s*=\s*{([^,]+), ([^}]*)},/, function (match, p1, p2, offset, string) {
     // Fix journal name.
     return 'journal={' + cb + p2 + ' ' + p1 + ce + '},';
-  }).replace(/booktitle={([^}]+),\s*([^}]+)},/, function (match, p1, p2, offset, string) {
+  }).replace(/booktitle\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
     // Fix booktitle field.
-    var res = p2.replace(/(.*)\.\s*(.*)/, '$2 ' + p1 + ' $1');
-    if (res === p2) {
-      res = p2 + ' ' + p1;
+    // Check for a period.
+    var res = p1.replace(/(.*)\.\s*(.*)/, '$2 $1');
+    if (res === p1) {
+      // Check for a comma.
+      res = p1.replace(/(.*),\s*(.*)/, '$2 $1');
     }
     if (/^Proceedings/.test(res) === false) {
       res = 'Proceedings of the ' + res.replace(/\s*Proceedings\s*/i, '').replace(/^the\s*/i, '');
     }
-    return 'booktitle={' + cb + res + ce + '},';
-  }).replace(/month={\s*(\w+)\s*}/, function (match, p1, offset, string) {
+    res = res.toTitleCase();
+    if (res === p1) {
+      return match;
+    } else {
+      return 'booktitle={' + cb + res + ce + '},';
+    }
+  }).replace(/month\s*=\s*{\s*(\w+)\s*}/, function (match, p1, offset, string) {
     // Use three-letter month macro.
     return 'month=' + cb + p1.substr(0, 3).toLowerCase() + ce + ',';
-  }).replace(/pages={\s*(\d+)\s*-\s*(\d+)([^}]*)},/, function (match, p1, p2, p3, offset, string) {
+  }).replace(/pages\s*=\s*{\s*(\d+)\s*-\s*(\d+)([^}]*)},/, function (match, p1, p2, p3, offset, string) {
     // Use en-dash to separate page numbers.
     return 'pages={' + cb + p1 + '--' + p2 + p3 + ce + '},';
   }).replace(/([A-Z]\.)([A-Z]\.)/g, cb + '$1 $2' + ce);
   // Separate first name intial and middle name initial in author names.
+
+  if (site === sites.ACM_DL) {
+    fixed = fixed.replace(/url\s*=\s*{http:\/\/doi\.acm\.org[^}]*},\s*/, '');
+  }
 
   // Quit if nothing is changed.
   if (fixed === orig) {
@@ -72,7 +133,7 @@
   }
 
   // Create new elements on page.
-  if (site === sites.GOOGLE_SCHOLAR || site === sites.IEEE_XPLORE) {
+  if (site === sites.GOOGLE_SCHOLAR || site === sites.IEEE_XPLORE || site === sites.ACM_DL) {
     var newp = document.createElement('p');
     var newpcon = document.createTextNode('Fixed:');
     newp.appendChild(newpcon);
