@@ -10,6 +10,10 @@ It is an attempt to automate the tedious manual fixing work. However, it almost
 surely will not fix all problems. It might bring some errors too. Report issues
 if you find them.
 
+The latest stable release is available at [userscripts.org][us].
+
+[us]: http://userscripts.org/scripts/show/180169
+
 For an explanation of BibTeX errors, refer to
 <http://www.ece.ucdavis.edu/~jowens/biberrors.html>.
 
