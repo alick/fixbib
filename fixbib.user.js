@@ -6,7 +6,7 @@
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
 // @include     http://dl.acm.org/citation.cfm*
 // @include     http://dl.acm.org/exportformats.cfm*
-// @version     0.5
+// @version     0.6
 // @grant       none
 // ==/UserScript==
 
@@ -94,7 +94,7 @@
     } else {
       return 'title={' + cb + p + ce + '},';
     }
-  }).replace(/journal\s*=\s*{([^,]+), ([^}]*)},/, function (match, p1, p2, offset, string) {
+  }).replace(/journal\s*=\s*{([^,}]+), ([^}]*)},/, function (match, p1, p2, offset, string) {
     // Fix journal name.
     return 'journal={' + cb + p2 + ' ' + p1 + ce + '},';
   }).replace(/booktitle\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
@@ -106,7 +106,7 @@
       res = p1.replace(/(.*),\s*(.*)/, '$2 $1');
     }
     if (/^Proceedings/.test(res) === false) {
-      res = 'Proceedings of the ' + res.replace(/\s*Proceedings\s*/i, '').replace(/^the\s*/i, '');
+      res = 'Proceedings of the ' + res.replace(/\s*Proceedings\s*/i, ' ').replace(/^the\s*/i, '');
     }
     res = res.toTitleCase();
     if (res === p1) {
