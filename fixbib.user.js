@@ -6,7 +6,7 @@
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
 // @include     http://dl.acm.org/citation.cfm*
 // @include     http://dl.acm.org/exportformats.cfm*
-// @version     0.6
+// @version     0.7
 // @grant       none
 // ==/UserScript==
 
@@ -100,7 +100,7 @@
   }).replace(/booktitle\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
     // Fix booktitle field.
     // Check for a period.
-    var res = p1.replace(/(.*)\.\s*(.*)/, '$2 $1');
+    var res = p1.replace('Proc.', 'Proceedings').replace(/(.*)\.\s*(.*)/, '$2 $1');
     if (res === p1) {
       // Check for a comma.
       res = p1.replace(/(.*),\s*(.*)/, '$2 $1');
