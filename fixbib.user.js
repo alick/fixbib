@@ -6,7 +6,7 @@
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
 // @include     http://dl.acm.org/citation.cfm*
 // @include     http://dl.acm.org/exportformats.cfm*
-// @version     0.8
+// @version     0.9
 // @grant       none
 // ==/UserScript==
 
@@ -87,12 +87,12 @@
     cb = ce = '';
   }
 
-  fixed = orig.replace(/title\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
-    var p = p1.toTitleCase();
-    if (p === p1) {
+  fixed = orig.replace(/([^k])title\s*=\s*{([^}]+)},/, function (match, p1, p2, offset, string) {
+    var p = p2.toTitleCase();
+    if (p === p2) {
       return match;
     } else {
-      return 'title={' + cb + p + ce + '},';
+      return p1 + 'title={' + cb + p + ce + '},';
     }
   }).replace(/journal\s*=\s*{([^,}]+), ([^}]*)},/, function (match, p1, p2, offset, string) {
     // Fix journal name.
