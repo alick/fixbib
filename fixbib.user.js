@@ -6,7 +6,7 @@
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
 // @include     http://dl.acm.org/citation.cfm*
 // @include     http://dl.acm.org/exportformats.cfm*
-// @version     0.7
+// @version     0.8
 // @grant       none
 // ==/UserScript==
 
@@ -59,7 +59,7 @@
 
   // For ACM DL webpage, modify the BibTeX link to open in a new tab.
   if (site === sites.ACM_DL_WEB) {
-    var ret = /id=(\d+)/.exec(location.search);
+    var ret = /id=\d+\.(\d+)/.exec(location.search);
     if (ret !== null) {
       var id = ret[1];
       var newurl = 'http://dl.acm.org/exportformats.cfm?id=' + id + '&expformat=bibtex';
