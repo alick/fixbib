@@ -1,4 +1,4 @@
-# FixBix
+# FixBib
 ## Introduction
 
 FixBib is a Greasemonkey script that can fix common errors when exporting
@@ -14,7 +14,7 @@ The latest stable release is available at [userscripts.org][us].
 
 [us]: http://userscripts.org/scripts/show/180169
 
-For an explanation of BibTeX errors, refer to
+For an explanation of common BibTeX errors, refer to
 <http://www.ece.ucdavis.edu/~jowens/biberrors.html>.
 
 ## License
