@@ -64,7 +64,7 @@
     if (ret !== null) {
       var id = ret[2];
       var newurl = 'http://dl.acm.org/exportformats.cfm?id=' + id + '&expformat=bibtex';
-      var s = Ext.select('#divtools > ul:nth-child(2) > li:nth-child(5) > span:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)');
+      var s = Ext.select('#divtools a:contains(BibTeX)');
       s.elements[0].href = newurl;
     }
     return;
