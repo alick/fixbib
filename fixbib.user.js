@@ -59,11 +59,11 @@
 
   // For ACM DL webpage, modify the BibTeX link to open in a new tab.
   if (site === sites.ACM_DL_WEB) {
-    var ret = /id=\d+\.(\d+)/.exec(location.search);
+    var ret = /id=(\d+\.)?(\d+)/.exec(location.search);
     if (ret !== null) {
-      var id = ret[1];
+      var id = ret[2];
       var newurl = 'http://dl.acm.org/exportformats.cfm?id=' + id + '&expformat=bibtex';
-      var s = Ext.select('#divtools > ul:nth-child(2) > li:nth-child(4) > span:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)');
+      var s = Ext.select('#divtools > ul:nth-child(2) > li:nth-child(5) > span:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)');
       s.elements[0].href = newurl;
     }
     return;
