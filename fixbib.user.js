@@ -114,7 +114,7 @@
     } else {
       return 'booktitle={' + cb + res + ce + '},';
     }
-  }).replace(/month\s*=\s*{\s*(\w+)\s*}/, function (match, p1, offset, string) {
+  }).replace(/month\s*=\s*{\s*(\w+)\s*},/, function (match, p1, offset, string) {
     // Use three-letter month macro.
     return 'month=' + cb + p1.substr(0, 3).toLowerCase() + ce + ',';
   }).replace(/pages\s*=\s*{\s*(\d+)\s*-\s*(\d+)([^}]*)},/, function (match, p1, p2, p3, offset, string) {
