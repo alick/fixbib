@@ -126,6 +126,8 @@
 
   if (site === sites.ACM_DL) {
     fixed = fixed.replace(/url\s*=\s*{http:\/\/doi\.acm\.org[^}]*},\s*/, '');
+    fixed = fixed.replace(/series\s*=\s*{[^}]*},\s*/, '');
+    fixed = fixed.replace(/address\s*=\s*{[^}]*},\s*/, '').replace(/location\s*=\s*/,'address = ');
   }
 
   // Quit if nothing is changed.
