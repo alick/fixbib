@@ -6,7 +6,7 @@
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
 // @include     /^https?://dl\.acm\.org/citation\.cfm.*$/
 // @include     /^https?://dl\.acm\.org/exportformats\.cfm.*$/
-// @version     1.1
+// @version     1.2
 // @grant       none
 // ==/UserScript==
 
@@ -36,6 +36,30 @@
     });
   };
   // Title case function ended.
+
+  var booktitle_abbrev_dict = {
+    'Proceedings of the'  : 'Proc.',
+    'International' : 'Int.',
+    'Conference'  : 'Conf.',
+    'Symposium' : 'Symp.',
+    'on ' : '',
+    'First' : '1st',
+    'Second': '2nd',
+    'Third' : '3rd',
+    'Fourth': '4th',
+    'Fifth' : '5th',
+    'Sixth' : '6th',
+    'Seventh' : '7th',
+    'Eighth': '8th',
+    'Ninth' : '9th'
+  };
+  function abbrevBooktitle (booktitle, dict) {
+    var output = booktitle;
+    for (key in dict) {
+      output = output.replace(key, dict[key]);
+    }
+    return output;
+  }
 
   var sites = {
     UNKNOWN         : -1,
@@ -100,16 +124,14 @@
     return 'journal={' + cb + p2 + ' ' + p1 + ce + '},';
   }).replace(/booktitle\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
     // Fix booktitle field.
-    // Check for a period.
-    var res = p1.replace('Proc.', 'Proceedings').replace(/(.*)\.\s*(.*)/, '$2 $1');
+    // Check for a period. If so, transpose the two parts around the *last* period.
+    var res = p1.replace(/(.*)\.\s*(.*)/, '$2 $1');
     if (res === p1) {
       // Check for a comma.
       res = p1.replace(/(.*),\s*(.*)/, '$2 $1');
     }
-    if (/^Proceedings/.test(res) === false) {
-      res = 'Proceedings of the ' + res.replace(/\s*Proceedings\s*/i, ' ').replace(/^the\s*/i, '');
-    }
     res = res.toTitleCase();
+    res = abbrevBooktitle(res, booktitle_abbrev_dict);
     if (res === p1) {
       return match;
     } else {

@@ -6,3 +6,5 @@ Here are a few links for tests:
 - ACM DL Web, with HTTPS: https://dl.acm.org/citation.cfm?id=2626302
 - Google Scholar: http://scholar.google.com/scholar.bib?q=info:D12c_BOeqvYJ:scholar.google.com/&output=citation&hl=en&ct=citation&cd=2
 - IEEE Xplore: http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=6658648
+- IEEE Xplore, booktitle with a comma: http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=6406145
+- IEEE Xplore, booktitle with periods: http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=924686
