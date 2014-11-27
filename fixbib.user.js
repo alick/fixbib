@@ -4,9 +4,9 @@
 // @description Fix common bib errors.
 // @include     http://scholar.google.com/scholar.bib*
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
-// @include     http://dl.acm.org/citation.cfm*
-// @include     http://dl.acm.org/exportformats.cfm*
-// @version     1.0
+// @include     /^https?://dl\.acm\.org/citation\.cfm.*$/
+// @include     /^https?://dl\.acm\.org/exportformats\.cfm.*$/
+// @version     1.1
 // @grant       none
 // ==/UserScript==
 
