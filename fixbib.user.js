@@ -39,6 +39,8 @@
 
   var booktitle_abbrev_dict = {
     'Proceedings of the'  : 'Proc.',
+    'Annals': 'Ann.',
+    'Annual': 'Annu.',
     'International' : 'Int.',
     'Conference'  : 'Conf.',
     'Symposium' : 'Symp.',
