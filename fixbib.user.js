@@ -96,81 +96,90 @@
     return;
   }
 
-  var orig, fixed;
+  var pres, pre;
+  var npre = 0;
+  var orig = '', fixed = '';
   if (site === sites.GOOGLE_SCHOLAR || site === sites.ACM_DL) {
-    var pres = document.getElementsByTagName('pre');
-    var pre = pres[0];
-    orig = pre.innerHTML;
+    pres = document.getElementsByTagName('pre');
+    npre = pres.length;
   } else if (site === sites.IEEE_XPLORE) {
+    npre = 1;
     orig = document.body.innerHTML.replace(/<br>\s+/g, '');
   }
 
-  var colored = true;
-  var cb, ce;
-  if (colored == true) {
-    cb = '<span style="color: blue;">';
-    ce = '</span>';
-  } else {
-    cb = ce = '';
-  }
+  for (var i = 0; i < npre; ++i) {
+    if (site === sites.GOOGLE_SCHOLAR || site === sites.ACM_DL) {
+      pre = pres[i];
+      orig = pre.innerHTML;
+    }
 
-  fixed = orig.replace(/([^k])title\s*=\s*{([^}]+)},/, function (match, p1, p2, offset, string) {
-    var p = p2.toTitleCase();
-    if (p === p2) {
-      return match;
+    var colored = true;
+    var cb, ce;
+    if (colored == true) {
+      cb = '<span style="color: blue;">';
+      ce = '</span>';
     } else {
-      return p1 + 'title={' + cb + p + ce + '},';
+      cb = ce = '';
     }
-  }).replace(/journal\s*=\s*{([^,}]+), ([^}]*)},/, function (match, p1, p2, offset, string) {
-    // Fix journal name.
-    return 'journal={' + cb + p2 + ' ' + p1 + ce + '},';
-  }).replace(/booktitle\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
-    // Fix booktitle field.
-    // Check for a period. If so, transpose the two parts around the *last* period.
-    var res = p1.replace(/(.*)\.\s*(.*)/, '$2 $1');
-    if (res === p1) {
-      // Check for a comma.
-      res = p1.replace(/(.*),\s*(.*)/, '$2 $1');
+
+    fixed = orig.replace(/([^k])title\s*=\s*{([^}]+)},/, function (match, p1, p2, offset, string) {
+      var p = p2.toTitleCase();
+      if (p === p2) {
+        return match;
+      } else {
+        return p1 + 'title={' + cb + p + ce + '},';
+      }
+    }).replace(/journal\s*=\s*{([^,}]+), ([^}]*)},/, function (match, p1, p2, offset, string) {
+      // Fix journal name.
+      return 'journal={' + cb + p2 + ' ' + p1 + ce + '},';
+    }).replace(/booktitle\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
+      // Fix booktitle field.
+      // Check for a period. If so, transpose the two parts around the *last* period.
+      var res = p1.replace(/(.*)\.\s*(.*)/, '$2 $1');
+      if (res === p1) {
+        // Check for a comma.
+        res = p1.replace(/(.*),\s*(.*)/, '$2 $1');
+      }
+      res = res.toTitleCase();
+      res = abbrevBooktitle(res, booktitle_abbrev_dict);
+      if (res === p1) {
+        return match;
+      } else {
+        return 'booktitle={' + cb + res + ce + '},';
+      }
+    }).replace(/month\s*=\s*{\s*(\w+)\s*},/, function (match, p1, offset, string) {
+      // Use three-letter month macro.
+      return 'month=' + cb + p1.substr(0, 3).toLowerCase() + ce + ',';
+    }).replace(/pages\s*=\s*{\s*(\d+)\s*-\s*(\d+)([^}]*)},/, function (match, p1, p2, p3, offset, string) {
+      // Use en-dash to separate page numbers.
+      return 'pages={' + cb + p1 + '--' + p2 + p3 + ce + '},';
+    }).replace(/([A-Z]\.)([A-Z]\.)/g, cb + '$1 $2' + ce);
+    // Separate first name intial and middle name initial in author names.
+
+    if (site === sites.ACM_DL) {
+      fixed = fixed.replace(/url\s*=\s*{http:\/\/doi\.acm\.org[^}]*},\s*/, '');
+      fixed = fixed.replace(/series\s*=\s*{[^}]*},\s*/, '');
+      fixed = fixed.replace(/address\s*=\s*{[^}]*},\s*/, '').replace(/location\s*=\s*/,'address = ');
     }
-    res = res.toTitleCase();
-    res = abbrevBooktitle(res, booktitle_abbrev_dict);
-    if (res === p1) {
-      return match;
-    } else {
-      return 'booktitle={' + cb + res + ce + '},';
+
+    // Quit if nothing is changed.
+    if (fixed === orig) {
+      continue;
     }
-  }).replace(/month\s*=\s*{\s*(\w+)\s*},/, function (match, p1, offset, string) {
-    // Use three-letter month macro.
-    return 'month=' + cb + p1.substr(0, 3).toLowerCase() + ce + ',';
-  }).replace(/pages\s*=\s*{\s*(\d+)\s*-\s*(\d+)([^}]*)},/, function (match, p1, p2, p3, offset, string) {
-    // Use en-dash to separate page numbers.
-    return 'pages={' + cb + p1 + '--' + p2 + p3 + ce + '},';
-  }).replace(/([A-Z]\.)([A-Z]\.)/g, cb + '$1 $2' + ce);
-  // Separate first name intial and middle name initial in author names.
 
-  if (site === sites.ACM_DL) {
-    fixed = fixed.replace(/url\s*=\s*{http:\/\/doi\.acm\.org[^}]*},\s*/, '');
-    fixed = fixed.replace(/series\s*=\s*{[^}]*},\s*/, '');
-    fixed = fixed.replace(/address\s*=\s*{[^}]*},\s*/, '').replace(/location\s*=\s*/,'address = ');
-  }
+    // Create new elements on page.
+    if (site === sites.GOOGLE_SCHOLAR || site === sites.IEEE_XPLORE || site === sites.ACM_DL) {
+      var newp = document.createElement('p');
+      var newpcon = document.createTextNode('Fixed:');
+      newp.appendChild(newpcon);
+      var newpre = document.createElement('pre');
+      //var newprecon = document.createTextNode(fixed);
+      //newpre.appendChild(newprecon);
+      newpre.innerHTML = fixed;
 
-  // Quit if nothing is changed.
-  if (fixed === orig) {
-    return;
-  }
-
-  // Create new elements on page.
-  if (site === sites.GOOGLE_SCHOLAR || site === sites.IEEE_XPLORE || site === sites.ACM_DL) {
-    var newp = document.createElement('p');
-    var newpcon = document.createTextNode('Fixed:');
-    newp.appendChild(newpcon);
-    var newpre = document.createElement('pre');
-    //var newprecon = document.createTextNode(fixed);
-    //newpre.appendChild(newprecon);
-    newpre.innerHTML = fixed;
-
-    document.body.appendChild(newp);
-    document.body.appendChild(newpre);
+      document.body.appendChild(newp);
+      document.body.appendChild(newpre);
+    }
   }
 })();
 
