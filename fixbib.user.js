@@ -107,7 +107,9 @@
     orig = document.body.innerHTML.replace(/<br>\s+/g, '');
   }
 
-  for (var i = 0; i < npre; ++i) {
+  // We intentionally count from the last one, to ensure
+  // newpre not breaks the reference positions of pre in pres.
+  for (var i = npre - 1; i >= 0; --i) {
     if (site === sites.GOOGLE_SCHOLAR || site === sites.ACM_DL) {
       pre = pres[i];
       orig = pre.innerHTML;
@@ -177,8 +179,19 @@
       //newpre.appendChild(newprecon);
       newpre.innerHTML = fixed;
 
-      document.body.appendChild(newp);
-      document.body.appendChild(newpre);
+      if (site === sites.GOOGLE_SCHOLAR || site === sites.ACM_DL) {
+        if (pre.nextSibling) {
+          // Note the reverse order of newp and newpre with insertBefore.
+          pre.parentNode.insertBefore(newpre, pre.nextSibling);
+          pre.parentNode.insertBefore(newp, pre.nextSibling);
+        } else {
+          pre.parentNode.appendChild(newp);
+          pre.parentNode.appendChild(newpre);
+        }
+      } else {
+        document.body.appendChild(newp);
+        document.body.appendChild(newpre);
+      }
     }
   }
 })();
