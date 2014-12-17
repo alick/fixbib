@@ -171,25 +171,19 @@
 
     // Create new elements on page.
     if (site === sites.GOOGLE_SCHOLAR || site === sites.IEEE_XPLORE || site === sites.ACM_DL) {
-      var newp = document.createElement('p');
-      var newpcon = document.createTextNode('Fixed:');
-      newp.appendChild(newpcon);
       var newpre = document.createElement('pre');
-      //var newprecon = document.createTextNode(fixed);
-      //newpre.appendChild(newprecon);
+      newpre.setAttribute('contentEditable', 'true');
       newpre.innerHTML = fixed;
+      newpre.style = 'background-color: #EEEEEE; border-width: 0px;';
 
       if (site === sites.GOOGLE_SCHOLAR || site === sites.ACM_DL) {
         if (pre.nextSibling) {
           // Note the reverse order of newp and newpre with insertBefore.
           pre.parentNode.insertBefore(newpre, pre.nextSibling);
-          pre.parentNode.insertBefore(newp, pre.nextSibling);
         } else {
-          pre.parentNode.appendChild(newp);
           pre.parentNode.appendChild(newpre);
         }
       } else {
-        document.body.appendChild(newp);
         document.body.appendChild(newpre);
       }
     }
