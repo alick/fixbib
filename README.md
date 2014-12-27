@@ -7,14 +7,16 @@ analyses the BibTeX entry and presents the fixed ones on export pages. The
 changes are highlighted for you to re-examine easily.
 
 It is an attempt to automate the tedious manual fixing work. However, it almost
-surely will not fix all problems. It might bring some errors too. Report issues
-if you find them.
+surely will not fix all problems. It might bring some errors too. Therefore, it
+allows you to further edit directly on the web page. Besides, you are welcome to
+report any issues you find.
 
-The latest stable release is available at [userscripts.org][us].
+The latest release is available at [GitHub][gh] and [GreasyFork][gf].
 
-[us]: http://userscripts.org/scripts/show/180169
+[gh]: https://github.com/alick9188/fixbib/raw/master/fixbib.user.js
+[gf]: https://greasyfork.org/scripts/7187-fixbib
 
-For an explanation of common BibTeX errors, refer to
+For an explanation of common BibTeX errors, please refer to
 <http://www.ece.ucdavis.edu/~jowens/biberrors.html>.
 
 ## License
