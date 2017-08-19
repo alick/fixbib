@@ -133,7 +133,7 @@
       } else {
         return p1 + 'title={' + cb + p + ce + '},';
       }
-    }).replace(/journal\s*=\s*{([^,}]+), ([^}]*)},/, function (match, p1, p2, offset, string) {
+    }).replace(/journal\s*=\s*{([^,}]+), ([^}]*IEEE[^}]*)},/, function (match, p1, p2, offset, string) {
       // Fix journal name.
       return 'journal={' + cb + p2 + ' ' + p1 + ce + '},';
     }).replace(/booktitle\s*=\s*{([^}]+)},/, function (match, p1, offset, string) {
