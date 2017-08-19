@@ -7,7 +7,7 @@
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
 // @include     /^https?://dl\.acm\.org/citation\.cfm.*$/
 // @include     /^https?://dl\.acm\.org/exportformats\.cfm.*$/
-// @version     1.3
+// @version     1.4
 // @grant       none
 // ==/UserScript==
 
