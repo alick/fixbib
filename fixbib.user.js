@@ -3,6 +3,7 @@
 // @namespace   https://github.com/alick9188
 // @description Fix common bib errors.
 // @include     http://scholar.google.com/scholar.bib*
+// @include     https://scholar.googleusercontent.com/*
 // @include     http://ieeexplore.ieee.org/xpl/downloadCitations
 // @include     /^https?://dl\.acm\.org/citation\.cfm.*$/
 // @include     /^https?://dl\.acm\.org/exportformats\.cfm.*$/
@@ -72,7 +73,8 @@
   };
 
   var site = sites.UNKNOWN;
-  if (location.hostname === 'scholar.google.com') {
+  if (location.hostname === 'scholar.google.com' ||
+      location.hostname === 'scholar.googleusercontent.com') {
     site = sites.GOOGLE_SCHOLAR;
   } else if (location.hostname === 'dl.acm.org') {
     if (location.pathname === '/citation.cfm') {
